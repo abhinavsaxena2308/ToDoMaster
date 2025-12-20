@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from '../ThemeToggle';
 import Modal from '../ui/Modal';
-import { Bars3Icon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { FiMenu } from 'react-icons/fi';
 
 export default function Navbar({ toggleSidebar }) {
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -23,10 +24,10 @@ export default function Navbar({ toggleSidebar }) {
                         onClick={toggleSidebar}
                     >
                         <span className="sr-only">Open sidebar</span>
-                        <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                        <FiMenu className="h-6 w-6" aria-hidden="true" />
                     </button>
-                    <Link to="/dashboard" className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        ToDoMaster
+                    <Link to="/dashboard" className="flex items-center space-x-2">
+                        <img src="/logo.png" alt="ToDoMaster Logo" className="h-8" />
                     </Link>
                 </div>
                 <div className="flex items-center space-x-4">

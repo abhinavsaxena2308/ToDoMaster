@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { CalendarIcon, PlayIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
+import { CalendarIcon, PlayIcon, CheckCircleIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/outline';
 
 const navigation = [
     { name: 'Upcoming Tasks', href: '#', icon: CalendarIcon, count: '5', current: true },
@@ -11,17 +12,15 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
 }
 
-export default function Sidebar({ isOpen }) {
+export default function Sidebar({ isOpen, toggleSidebar }) {
     const [activeNav, setActiveNav] = useState('Upcoming Tasks');
 
     return (
         <div className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 ${isOpen ? 'w-64' : 'w-20'}`}>
-            <div className="flex items-center justify-center h-16 flex-shrink-0 px-4">
-                {/* Placeholder for logo when sidebar is open/closed */}
-                <div className={`text-2xl font-bold text-emerald-600 dark:text-emerald-500 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-                    TM
-                </div>
-            </div>
+            <Link to="/dashboard" className="flex items-center justify-center h-16 flex-shrink-0 px-4">
+                <img src="/logo.png" alt="ToDoMaster Logo" className={`transition-all duration-300 ${isOpen ? 'h-10' : 'h-8'}`} />
+                <span className={`text-xl font-bold text-gray-800 dark:text-white ml-2 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>ToDoMaster</span>
+            </Link>
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <nav className="flex-1 px-2 py-4 space-y-1">
                     {navigation.map((item) => (
@@ -55,6 +54,14 @@ export default function Sidebar({ isOpen }) {
                         </a>
                     ))}
                 </nav>
+            </div>
+            <div className="border-t border-gray-200 dark:border-gray-700 p-2">
+                <button 
+                    onClick={toggleSidebar}
+                    className="w-full flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                    <ChevronDoubleLeftIcon className={`h-6 w-6 transition-transform duration-300 ${!isOpen && 'rotate-180'}`} />
+                </button>
             </div>
         </div>
     );

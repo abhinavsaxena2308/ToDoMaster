@@ -1,11 +1,10 @@
-import { dummyTasks } from '../../data/dummyTasks';
 import TaskCard from './TaskCard';
 
-export default function TaskList() {
+export default function TaskList({ tasks, onUpdateStatus, onDelete }) {
     return (
         <div className="space-y-4">
-            {dummyTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
+            {tasks.map((task) => (
+                <TaskCard key={task.id} task={task} onUpdateStatus={onUpdateStatus} onDelete={onDelete} />
             ))}
         </div>
     );
