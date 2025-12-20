@@ -25,16 +25,18 @@ export default function Dashboard() {
 
     const fetchTasks = async () => {
         setIsLoading(true);
+        // Simple query first to test connection
         const { data, error } = await supabase
             .from('tasks')
             .select('*')
-            .eq('user_id', user.id);
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
 
         if (error) {
             console.error('Error fetching tasks:', error);
             toast.error('Error', 'Failed to fetch tasks.');
         } else {
-            setTasks(data);
+            setTasks(data || []);
         }
         setIsLoading(false);
     };
@@ -150,6 +152,15 @@ export default function Dashboard() {
                         {activeTab === 'ongoing' ? 'Active' : 'Done'}
                     </span>
                 </div>
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-emerald-500/25"
+                    aria-label="Add new task"
+                    title="Add new task (Ctrl+N)"
+                >
+                    <PlusCircleIcon className="h-5 w-5" />
+                    <span className="font-medium">Add Task</span>
+                </button>
             </div>
 
             <div className="border-b border-gray-200 dark:border-gray-700" role="tablist" aria-label="Task categories">

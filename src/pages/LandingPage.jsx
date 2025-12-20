@@ -1,27 +1,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
-import { CheckCircleIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
+import { useSharedTheme } from '../contexts/SharedThemeContext';
+import logo from '../../public/logo.png';
 
 export default function LandingPage() {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const { isDarkMode, toggleTheme } = useSharedTheme();
 
     return (
         <div className={`min-h-screen ${isDarkMode ? 'bg-black' : 'bg-white'} transition-colors duration-300`}>
             {/* Navigation */}
-            <nav className={`absolute top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-black/50 backdrop-blur-lg border-white/10' : 'bg-white/50 backdrop-blur-lg border-gray-200/20'} border-b`}>
+            <nav className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-black/50 backdrop-blur-lg border-white/10' : 'bg-white/50 backdrop-blur-lg border-gray-200/20'} border-b`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
                         <div className="flex items-center">
                             <Link to="/" className="flex items-center space-x-2">
-                                <div className="relative">
-                                    <div className={`absolute inset-0 ${isDarkMode ? 'bg-emerald-500/20' : 'bg-emerald-500/10'} rounded-lg blur-sm`}></div>
-                                    <div className={`relative ${isDarkMode ? 'bg-emerald-500/30' : 'bg-emerald-500'} p-2 rounded-lg`}>
-                                        <CheckCircleIcon className="h-5 w-5 text-white" />
-                                    </div>
-                                </div>
+                                <img src={logo} className="h-8 w-21 object-contain" alt="Task Flow Logo"/>
                                 <span className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Task Flow</span>
                             </Link>
                         </div>
@@ -49,7 +46,7 @@ export default function LandingPage() {
                                 Sign Up
                             </Link>
                             <button
-                                onClick={() => setIsDarkMode(!isDarkMode)}
+                                onClick={toggleTheme}
                                 className={`p-2 rounded-lg ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
                             >
                                 {isDarkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
@@ -79,7 +76,7 @@ export default function LandingPage() {
                         <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-6`}>
                             <span className="block">Organize Tasks.</span>
                             <span className="block">Track Progress.</span>
-                            <span className="block bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">Stay Focused.</span>
+                            <span className="block bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent drop-shadow-lg">Stay Focused.</span>
                         </h1>
 
                         {/* Subtitle */}
@@ -109,7 +106,7 @@ export default function LandingPage() {
                         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                             <div className={`text-center p-6 rounded-xl ${isDarkMode ? 'bg-white/5 border border-white/10' : 'bg-gray-50 border border-gray-200'}`}>
                                 <div className="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircleIcon className="h-6 w-6 text-emerald-500" />
+                                    <img src={logo} className="h-10 w-10 object-contain" alt="Task Flow Logo"/>
                                 </div>
                                 <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>Smart Tasks</h3>
                                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Create, organize, and prioritize tasks with intelligent categorization</p>

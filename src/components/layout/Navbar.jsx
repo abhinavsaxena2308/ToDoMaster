@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ThemeToggle from '../ThemeToggle';
 import logo from '../../../public/logo.png'
 import Modal from '../ui/Modal';
-import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightOnRectangleIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSharedTheme } from '../../contexts/SharedThemeContext';
 
 export default function Navbar() {
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const { signOut } = useAuth();
     const navigate = useNavigate();
-
+    const { isDarkMode, toggleTheme } = useSharedTheme();
     const handleLogout = () => {
         signOut();
         setIsLogoutModalOpen(false);
@@ -23,7 +23,7 @@ export default function Navbar() {
                 <div className="flex items-center">
                     <Link to="/dashboard" className="flex items-center group">
                         <div className="relative">
-                            <img src={logo} className="h-12 w-22 " alt="Task Flow Logo"/>
+                            <img src={logo} className="h-12 w-22 " alt="Task Flow Logo" />
                         </div>
                         <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                             Task Flow
@@ -31,7 +31,12 @@ export default function Navbar() {
                     </Link>
                 </div>
                 <div className="flex items-center space-x-4">
-                    <ThemeToggle />
+                    <button
+                        onClick={toggleTheme}
+                        className={`p-2 rounded-lg ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
+                    >
+                        {isDarkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
+                    </button>
                     <button
                         type="button"
                         onClick={() => setIsLogoutModalOpen(true)}

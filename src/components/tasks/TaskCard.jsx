@@ -121,6 +121,10 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
                         </button>
                     </div>
                     <div className="mt-4" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" aria-label={`Task progress: ${Math.round(progress)}%`}>
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
+                            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{Math.round(progress)}%</span>
+                        </div>
                         <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
                             <div className="bg-emerald-600 h-2.5 rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
                         </div>

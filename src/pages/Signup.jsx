@@ -1,14 +1,20 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useSharedTheme } from '../contexts/SharedThemeContext';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
+import logo from '../../public/logo.png';
 
 export default function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { signUp } = useAuth();
     const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useSharedTheme();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,41 +33,120 @@ export default function Signup() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">Sign Up</h2>
-                {error && <p className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</p>}
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            className="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
+        <div className={`min-h-screen ${isDarkMode ? 'bg-black' : 'bg-white'} transition-colors duration-300`}>
+            {/* Background Effects */}
+            <div className="absolute inset-0">
+                <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-40 right-20 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl"></div>
+                <div className={`absolute inset-0 ${isDarkMode ? 'bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%2310b981" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")]' : 'bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%2310b981" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")]'}`}></div>
+            </div>
+
+            {/* Theme Toggle */}
+            <div className="absolute top-4 right-4 z-10">
+                <button
+                    onClick={toggleTheme}
+                    className={`p-2 rounded-lg ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
+                >
+                    {isDarkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
+                </button>
+            </div>
+
+            {/* Signup Form */}
+            <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+                <div className={`w-full max-w-md ${isDarkMode ? 'bg-white/5 backdrop-blur-lg border border-white/10' : 'bg-white/50 backdrop-blur-lg border border-gray-200/20'} rounded-2xl shadow-xl p-8`}>
+                    {/* Logo and Title */}
+                    <div className="text-center mb-8">
+                        <div className="flex justify-center mb-4">
+                            <img src={logo} className="h-20 w-20 object-contain" alt="Task Flow Logo"/>
+                        </div>
+                        <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>Create Account</h2>
+                        <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Join Task Flow and start organizing</p>
                     </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            className="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                            <p className="text-red-500 text-sm">{error}</p>
+                        </div>
+                    )}
+
+                    {/* Form */}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                className={`w-full px-4 py-3 rounded-lg border ${isDarkMode ? 'bg-white/10 border-white/20 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200`}
+                                placeholder="Enter your email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>
+                                Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    className={`w-full px-4 py-3 pr-12 rounded-lg border ${isDarkMode ? 'bg-white/10 border-white/20 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200`}
+                                    placeholder="Create a password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'} transition-colors`}
+                                >
+                                    {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <input
+                                type="checkbox"
+                                id="terms"
+                                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                                required
+                            />
+                            <label htmlFor="terms" className={`ml-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                I agree to the{' '}
+                                <a href="#" className="text-emerald-600 hover:text-emerald-500 transition-colors">
+                                    Terms of Service
+                                </a>{' '}
+                                and{' '}
+                                <a href="#" className="text-emerald-600 hover:text-emerald-500 transition-colors">
+                                    Privacy Policy
+                                </a>
+                            </label>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-3 px-4 text-lg font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02]"
+                        >
+                            {loading ? 'Creating Account...' : 'Sign Up'}
+                        </button>
+                    </form>
+
+                    {/* Login Link */}
+                    <div className="mt-8 text-center">
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                            Already have an account?{' '}
+                            <Link to="/login" className="text-emerald-600 hover:text-emerald-500 font-medium transition-colors">
+                                Sign in
+                            </Link>
+                        </p>
                     </div>
-                    <button
-                        type="submit"
-                        className="w-full btn-primary disabled:opacity-50"
-                        disabled={loading}
-                    >
-                        {loading ? 'Signing up...' : 'Sign Up'}
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     );
