@@ -1,0 +1,54 @@
+export const dummyTasks = [
+    {
+        id: 1,
+        title: 'Design the new landing page',
+        description: 'Create a modern and responsive design for the new landing page using Figma.',
+        dueDate: '2025-12-25',
+        status: 'ongoing',
+        progress: 75,
+        subTasks: [
+            { id: 1, title: 'Wireframing', isCompleted: true },
+            { id: 2, title: 'UI Mockups', isCompleted: true },
+            { id: 3, title: 'Prototype in Figma', isCompleted: false },
+        ],
+    },
+    {
+        id: 2,
+        title: 'Develop the authentication flow',
+        description: 'Implement user signup, login, and logout functionality using Supabase Auth.',
+        dueDate: '2025-12-22',
+        status: 'completed',
+        progress: 100,
+        subTasks: [
+            { id: 1, title: 'Setup Supabase project', isCompleted: true },
+            { id: 2, title: 'Create Auth context', isCompleted: true },
+            { id: 3, title: 'Build Login and Signup pages', isCompleted: true },
+        ],
+    },
+    {
+        id: 3,
+        title: 'Setup CI/CD pipeline',
+        description: 'Configure GitHub Actions to automatically build and deploy the application.',
+        dueDate: '2025-12-28',
+        status: 'upcoming',
+        progress: 10,
+        subTasks: [
+            { id: 1, title: 'Create workflow file', isCompleted: true },
+            { id: 2, title: 'Add build step', isCompleted: false },
+            { id: 3, title: 'Add deploy step', isCompleted: false },
+        ],
+    },
+    {
+        id: 4,
+        title: 'Write API documentation',
+        description: 'Document all the API endpoints for the task management system.',
+        dueDate: '2026-01-10',
+        status: 'upcoming',
+        progress: 0,
+        subTasks: [
+            { id: 1, title: 'Document tasks endpoints', isCompleted: false },
+            { id: 2, title: 'Document sub-tasks endpoints', isCompleted: false },
+            { id: 3, title: 'Document auth endpoints', isCompleted: false },
+        ],
+    },
+];
