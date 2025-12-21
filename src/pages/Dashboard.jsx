@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/layout/Layout';
 import TaskList from '../components/tasks/TaskList';
 import AddTask from '../components/tasks/AddTask';
+import QuickAddTask from '../components/tasks/QuickAddTask';
 import Modal from '../components/ui/Modal';
 import Spinner from '../components/ui/Spinner';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
@@ -10,12 +11,13 @@ import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/toast/ToastContext';
-import { PlusCircleIcon } from '@heroicons/react/24/solid';
+import { PlusCircleIcon, PlusIcon } from '@heroicons/react/24/solid';
 
 export default function Dashboard() {
     const { user } = useAuth();
     const [tasks, setTasks] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isQuickAddOpen, setIsQuickAddOpen] = useState(false); // New state for quick add
     const [activeTab, setActiveTab] = useState('ongoing');
     const [isLoading, setIsLoading] = useState(false);
     const [isAddingTask, setIsAddingTask] = useState(false);
@@ -150,6 +152,29 @@ export default function Dashboard() {
         }
     };
 
+    // New handler for quick add task
+    const handleQuickAddTask = async (task) => {
+        setIsAddingTask(true);
+        const { data: taskData, error: taskError } = await supabase
+            .from('tasks')
+            .insert([{ ...task, user_id: user.id }])
+            .select();
+
+        if (taskError) {
+            console.error('Error adding task:', taskError);
+            toast.error('Error', 'Failed to add task. Please try again.');
+            setIsAddingTask(false);
+            return;
+        }
+
+        if (taskData) {
+            fetchTasks(); // Refetch all tasks to get the new one
+            setIsQuickAddOpen(false);
+            toast.success('Success', 'Task added successfully.');
+            setIsAddingTask(false);
+        }
+    };
+
     const handleUpdateTaskStatus = async (id, status) => {
         setUpdatingTaskIds(prev => new Set(prev).add(id));
         const { error } = await supabase
@@ -220,6 +245,16 @@ export default function Dashboard() {
                     <span className="font-medium">Add Task</span>
                 </button>
             </div>
+
+            {/* Floating Action Button for Quick Add */}
+            <button
+                onClick={() => setIsQuickAddOpen(true)}
+                className="fixed bottom-8 right-8 md:bottom-12 md:right-12 z-40 p-4 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-gray-800 transition-all duration-200 transform hover:scale-110"
+                aria-label="Quick add task"
+                title="Quick add task"
+            >
+                <PlusIcon className="h-6 w-6" />
+            </button>
 
             <div className="border-b border-gray-200 dark:border-gray-700" role="tablist" aria-label="Task categories">
                 <nav className="-mb-px flex space-x-8" aria-label="Tabs">
@@ -315,6 +350,14 @@ export default function Dashboard() {
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add a new task">
                 <AddTask onAddTask={handleAddTask} onCancel={() => setIsModalOpen(false)} />
             </Modal>
+
+            {/* Quick Add Task Modal */}
+            {isQuickAddOpen && (
+                <QuickAddTask 
+                    onSubmit={handleQuickAddTask} 
+                    onCancel={() => setIsQuickAddOpen(false)} 
+                />
+            )}
         </Layout>
     );
 }

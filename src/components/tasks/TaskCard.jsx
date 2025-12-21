@@ -2,8 +2,9 @@ import { useState } from 'react';
 import SubTaskList from './SubTaskList';
 import Spinner from '../ui/Spinner';
 import Modal from '../ui/Modal';
-import { ChevronDownIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ChevronDownIcon, TrashIcon, ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
+import { isTaskOverdue, formatDate } from '../../utils/taskUtils';
 
 const statusStyles = {
     upcoming: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
@@ -22,6 +23,14 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
     const [isExpanded, setIsExpanded] = useState(false);
     const [progress, setProgress] = useState(0);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    
+    // Check if the task is overdue
+    const isOverdue = isTaskOverdue(task);
+    
+    // Define styling for overdue tasks
+    const cardClass = isOverdue 
+        ? 'bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] border-2 border-red-500 dark:border-red-400' 
+        : 'bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]';
 
     const handleProgressUpdate = (completed, total) => {
         const newProgress = total > 0 ? (completed / total) * 100 : 0;
@@ -34,7 +43,7 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
 
     return (
         <>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]" role="article" aria-labelledby={`task-title-${task.id}`}>
+            <div className={cardClass} role="article" aria-labelledby={`task-title-${task.id}`}>
                 <div 
                     className="p-4 cursor-pointer" 
                     onClick={() => setIsExpanded(!isExpanded)}
@@ -56,6 +65,13 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityStyles[task.priority]}`}>
                                 {task.priority}
                             </span>
+                            {/* Overdue indicator */}
+                            {isOverdue && (
+                                <span className="flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                    <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
+                                    Overdue
+                                </span>
+                            )}
                         </div>
                         <div className="flex items-center space-x-2">
                             <Menu as="div" className="relative inline-block text-left">
@@ -124,7 +140,7 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
                     </div>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{task.description}</p>
                     <div className="mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                        <span>Due: {task.dueDate}</span>
+                        <span>Due: {formatDate(task.dueDate || task.due_date)}</span>
                         <button 
                             className="-m-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                             aria-label={isExpanded ? 'Collapse task details' : 'Expand task details'}
