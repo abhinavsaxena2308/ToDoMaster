@@ -16,6 +16,12 @@ export default function Login() {
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useSharedTheme();
 
+    // Debug function to test theme toggle
+    const handleThemeToggle = () => {
+        console.log('Theme toggle clicked');
+        console.log('Current isDarkMode:', isDarkMode);
+        toggleTheme();
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -41,12 +47,30 @@ export default function Login() {
             </div>
 
             {/* Theme Toggle */}
-            <div className="absolute top-4 right-4 z-10">
+            {/* Theme Toggle */}
+            <div
+                className="fixed top-4 right-4 z-50"
+                style={{ position: 'fixed', top: '1rem', right: '1rem' }}
+            >
                 <button
-                    onClick={toggleTheme}
-                    className={`p-2 rounded-lg ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
+                    onClick={handleThemeToggle}
+                    className={`p-3 rounded-lg shadow-lg ${isDarkMode
+                            ? 'bg-white/20 text-white hover:bg-white/30'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        } transition-all duration-200`}
+                    style={{
+                        width: '2.5rem',
+                        height: '2.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
                 >
-                    {isDarkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
+                    {isDarkMode ? (
+                        <SunIcon className="h-5 w-5" />
+                    ) : (
+                        <MoonIcon className="h-5 w-5" />
+                    )}
                 </button>
             </div>
 
@@ -56,7 +80,7 @@ export default function Login() {
                     {/* Logo and Title */}
                     <div className="text-center mb-8">
                         <div className="flex justify-center mb-4">
-                            <img src={logo} className="h-20 w-20 object-contain" alt="Task Flow Logo"/>
+                            <img src={logo} className="h-20 w-20 object-contain" alt="Task Flow Logo" />
                         </div>
                         <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>Welcome Back</h2>
                         <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Sign in to your Task Flow account</p>
