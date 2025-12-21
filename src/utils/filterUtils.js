@@ -71,6 +71,24 @@ export const filterByDueDate = (tasks, dueDateFilter) => {
 };
 
 /**
+ * Searches tasks based on title and description
+ * @param {Array} tasks - Array of task objects
+ * @param {String} query - Search query
+ * @returns {Array} - Filtered tasks
+ */
+export const searchTasks = (tasks, query) => {
+    if (!query || query.trim() === '') return tasks;
+    
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    return tasks.filter(task => {
+        const titleMatch = task.title && task.title.toLowerCase().includes(normalizedQuery);
+        const descriptionMatch = task.description && task.description.toLowerCase().includes(normalizedQuery);
+        return titleMatch || descriptionMatch;
+    });
+};
+
+/**
  * Applies all filters to tasks
  * @param {Array} tasks - Array of task objects
  * @param {Object} filters - Object containing all filter states
@@ -85,6 +103,31 @@ export const applyFilters = (tasks, filters) => {
     filteredTasks = filterByDueDate(filteredTasks, filters.dueDateFilter);
     
     return filteredTasks;
+};
+
+/**
+ * Applies search to tasks
+ * @param {Array} tasks - Array of task objects
+ * @param {String} query - Search query
+ * @returns {Array} - Searched tasks
+ */
+export const applySearch = (tasks, query) => {
+    return searchTasks(tasks, query);
+};
+
+/**
+ * Applies both filters and search to tasks
+ * @param {Array} tasks - Array of task objects
+ * @param {Object} filters - Object containing all filter states
+ * @param {String} query - Search query
+ * @returns {Array} - Filtered and searched tasks
+ */
+export const applyFiltersAndSearch = (tasks, filters, query) => {
+    // First apply filters
+    const filteredTasks = applyFilters(tasks, filters);
+    
+    // Then apply search to filtered tasks
+    return applySearch(filteredTasks, query);
 };
 
 /**

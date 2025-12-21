@@ -11,8 +11,8 @@ import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/toast/ToastContext';
-import { PlusCircleIcon, PlusIcon, FunnelIcon } from '@heroicons/react/24/solid';
-import { applyFilters, hasActiveFilters, clearFilters } from '../utils/filterUtils';
+import { PlusCircleIcon, PlusIcon, FunnelIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { applyFilters, hasActiveFilters, clearFilters, applyFiltersAndSearch } from '../utils/filterUtils';
 import FilterPanel from '../components/tasks/FilterPanel';
 
 export default function Dashboard() {
@@ -31,6 +31,9 @@ export default function Dashboard() {
     const [dueDateFilter, setDueDateFilter] = useState(''); // Single-select: 'Today', 'This Week', 'Overdue'
     const [statusFilters, setStatusFilters] = useState([]); // Multi-select: 'Upcoming', 'Ongoing', 'Completed'
     const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false); // State for filter panel
+    
+    // Search state
+    const [searchQuery, setSearchQuery] = useState(''); // Search input value
     
     const toast = useToast();
 
@@ -229,18 +232,18 @@ export default function Dashboard() {
     const ongoingTasks = tasks.filter(task => task.status === 'ongoing' || task.status === 'upcoming');
     const completedTasks = tasks.filter(task => task.status === 'completed');
     
-    // Apply filters to tasks
-    const filteredOngoingTasks = applyFilters(ongoingTasks, {
+    // Apply filters and search to tasks
+    const filteredOngoingTasks = applyFiltersAndSearch(ongoingTasks, {
         priorityFilters,
         dueDateFilter,
         statusFilters
-    });
+    }, searchQuery);
     
-    const filteredCompletedTasks = applyFilters(completedTasks, {
+    const filteredCompletedTasks = applyFiltersAndSearch(completedTasks, {
         priorityFilters,
         dueDateFilter,
         statusFilters
-    });
+    }, searchQuery);
 
     return (
         <Layout>
@@ -302,16 +305,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Floating Action Button for Quick Add */}
-            <button
-                onClick={() => setIsQuickAddOpen(true)}
-                className="fixed bottom-8 right-8 md:bottom-12 md:right-12 z-40 p-4 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-gray-800 transition-all duration-200 transform hover:scale-110"
-                aria-label="Quick add task"
-                title="Quick add task"
-            >
-                <PlusIcon className="h-6 w-6" />
-            </button>
-
             <div className="border-b border-gray-200 dark:border-gray-700" role="tablist" aria-label="Task categories">
                 <nav className="-mb-px flex space-x-8" aria-label="Tabs">
                     <button 
@@ -339,6 +332,29 @@ export default function Dashboard() {
                         <span className="ml-2 text-xs text-gray-400">Ctrl+2</span>
                     </button>
                 </nav>
+            </div>
+
+            {/* Search Input */}
+            <div className="mt-4">
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search tasks…"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500 sm:text-sm"
+                    />
+                    {searchQuery && (
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {filteredOngoingTasks.length + filteredCompletedTasks.length} results
+                            </span>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="mt-8">
@@ -371,7 +387,6 @@ export default function Dashboard() {
                                 onAction={() => setIsModalOpen(true)}
                             />
                         )}
-
                     </div>
                 )}
                 {activeTab === 'completed' && (
@@ -400,10 +415,19 @@ export default function Dashboard() {
                         ) : (
                             <EmptyState type="completed" />
                         )}
-
                     </div>
                 )}
             </div>
+
+            {/* Floating Action Button for Quick Add */}
+            <button
+                onClick={() => setIsQuickAddOpen(true)}
+                className="fixed bottom-8 right-8 md:bottom-12 md:right-12 z-40 p-4 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-gray-800 transition-all duration-200 transform hover:scale-110"
+                aria-label="Quick add task"
+                title="Quick add task"
+            >
+                <PlusIcon className="h-6 w-6" />
+            </button>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add a new task">
                 <AddTask onAddTask={handleAddTask} onCancel={() => setIsModalOpen(false)} />
