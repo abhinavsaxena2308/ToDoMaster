@@ -11,6 +11,13 @@ const statusStyles = {
     completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
 };
 
+// Priority styles for visual indicators
+const priorityStyles = {
+    Low: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+    Medium: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
+    High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+};
+
 export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, isDeleting }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -43,7 +50,13 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
                     aria-controls={`task-details-${task.id}`}
                 >
                     <div className="flex justify-between items-start">
-                        <h3 id={`task-title-${task.id}`} className="text-lg font-bold text-gray-900 dark:text-gray-100">{task.title}</h3>
+                        <div className="flex items-start space-x-2">
+                            <h3 id={`task-title-${task.id}`} className="text-lg font-bold text-gray-900 dark:text-gray-100">{task.title}</h3>
+                            {/* Priority indicator badge */}
+                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityStyles[task.priority]}`}>
+                                {task.priority}
+                            </span>
+                        </div>
                         <div className="flex items-center space-x-2">
                             <Menu as="div" className="relative inline-block text-left">
                                 <div>

@@ -5,6 +5,7 @@ export const dummyTasks = [
         description: 'Create a modern and responsive design for the new landing page using Figma.',
         dueDate: '2025-12-25',
         status: 'ongoing',
+        priority: 'High',
         progress: 75,
         subTasks: [
             { id: 1, title: 'Wireframing', isCompleted: true },
@@ -18,6 +19,7 @@ export const dummyTasks = [
         description: 'Implement user signup, login, and logout functionality using Supabase Auth.',
         dueDate: '2025-12-22',
         status: 'completed',
+        priority: 'Medium',
         progress: 100,
         subTasks: [
             { id: 1, title: 'Setup Supabase project', isCompleted: true },
@@ -31,6 +33,7 @@ export const dummyTasks = [
         description: 'Configure GitHub Actions to automatically build and deploy the application.',
         dueDate: '2025-12-28',
         status: 'upcoming',
+        priority: 'Low',
         progress: 10,
         subTasks: [
             { id: 1, title: 'Create workflow file', isCompleted: true },
@@ -44,6 +47,7 @@ export const dummyTasks = [
         description: 'Document all the API endpoints for the task management system.',
         dueDate: '2026-01-10',
         status: 'upcoming',
+        priority: 'Medium',
         progress: 0,
         subTasks: [
             { id: 1, title: 'Document tasks endpoints', isCompleted: false },
