@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 
 export default function FilterPanel({ 
@@ -11,6 +11,10 @@ export default function FilterPanel({
     onClose 
 }) {
     const panelRef = useRef(null);
+
+    const priorityOptions = ['Low', 'Medium', 'High'];
+    const dueDateOptions = ['Today', 'This Week', 'Overdue'];
+    const statusOptions = ['Upcoming', 'Ongoing', 'Completed'];
 
     // Close panel when clicking outside
     useEffect(() => {
@@ -42,7 +46,7 @@ export default function FilterPanel({
         }
     };
 
-    const handleDueDateFilterChange = (filter) => {
+    const handleDueDateChange = (filter) => {
         setDueDateFilter(filter === dueDateFilter ? '' : filter);
     };
 
@@ -55,7 +59,7 @@ export default function FilterPanel({
     return (
         <div 
             ref={panelRef}
-            className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 border border-gray-200 dark:border-gray-700"
+            className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 border border-gray-200 dark:border-gray-700 filter-panel"
         >
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-center">
@@ -74,22 +78,16 @@ export default function FilterPanel({
                 <div>
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</h4>
                     <div className="space-y-2">
-                        {['Low', 'Medium', 'High'].map((priority) => (
-                            <div key={priority} className="flex items-center">
+                        {priorityOptions.map((priority) => (
+                            <label key={priority} className="flex items-center">
                                 <input
-                                    id={`priority-${priority}`}
                                     type="checkbox"
                                     checked={priorityFilters.includes(priority)}
                                     onChange={() => togglePriorityFilter(priority)}
-                                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+                                    className="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
                                 />
-                                <label
-                                    htmlFor={`priority-${priority}`}
-                                    className="ml-3 text-sm text-gray-700 dark:text-gray-300"
-                                >
-                                    {priority}
-                                </label>
-                            </div>
+                                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">{priority}</span>
+                            </label>
                         ))}
                     </div>
                 </div>
@@ -98,23 +96,17 @@ export default function FilterPanel({
                 <div>
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Due Date</h4>
                     <div className="space-y-2">
-                        {['Today', 'This Week', 'Overdue'].map((filter) => (
-                            <div key={filter} className="flex items-center">
+                        {dueDateOptions.map((option) => (
+                            <label key={option} className="flex items-center">
                                 <input
-                                    id={`due-date-${filter}`}
                                     type="radio"
-                                    name="due-date-filter"
-                                    checked={dueDateFilter === filter}
-                                    onChange={() => handleDueDateFilterChange(filter)}
-                                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 dark:bg-gray-700 dark:border-gray-600"
+                                    name="dueDate"
+                                    checked={dueDateFilter === option}
+                                    onChange={() => handleDueDateChange(option)}
+                                    className="h-4 w-4 text-emerald-600 border-gray-300 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
                                 />
-                                <label
-                                    htmlFor={`due-date-${filter}`}
-                                    className="ml-3 text-sm text-gray-700 dark:text-gray-300"
-                                >
-                                    {filter}
-                                </label>
-                            </div>
+                                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">{option}</span>
+                            </label>
                         ))}
                     </div>
                 </div>
@@ -123,22 +115,16 @@ export default function FilterPanel({
                 <div>
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</h4>
                     <div className="space-y-2">
-                        {['Upcoming', 'Ongoing', 'Completed'].map((status) => (
-                            <div key={status} className="flex items-center">
+                        {statusOptions.map((status) => (
+                            <label key={status} className="flex items-center">
                                 <input
-                                    id={`status-${status}`}
                                     type="checkbox"
                                     checked={statusFilters.includes(status)}
                                     onChange={() => toggleStatusFilter(status)}
-                                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+                                    className="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
                                 />
-                                <label
-                                    htmlFor={`status-${status}`}
-                                    className="ml-3 text-sm text-gray-700 dark:text-gray-300"
-                                >
-                                    {status}
-                                </label>
-                            </div>
+                                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">{status}</span>
+                            </label>
                         ))}
                     </div>
                 </div>
@@ -153,9 +139,9 @@ export default function FilterPanel({
                 </button>
                 <button
                     onClick={onClose}
-                    className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                    className="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-gray-800"
                 >
-                    Apply Filters
+                    Apply
                 </button>
             </div>
         </div>

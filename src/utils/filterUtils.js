@@ -89,6 +89,57 @@ export const searchTasks = (tasks, query) => {
 };
 
 /**
+ * Sorts tasks based on the specified field and direction
+ * @param {Array} tasks - Array of task objects
+ * @param {String} sortBy - Field to sort by ('due_date', 'priority', 'progress', 'created_at')
+ * @param {String} direction - Sort direction ('asc' or 'desc')
+ * @returns {Array} - Sorted tasks
+ */
+export const sortTasks = (tasks, sortBy, direction) => {
+    if (!sortBy) return tasks;
+    
+    return [...tasks].sort((a, b) => {
+        let aValue, bValue;
+        
+        switch (sortBy) {
+            case 'due_date':
+                // Handle null/undefined dates by putting them at the end
+                if (!a.due_date && !b.due_date) return 0;
+                if (!a.due_date) return direction === 'asc' ? 1 : -1;
+                if (!b.due_date) return direction === 'asc' ? -1 : 1;
+                
+                const aDate = new Date(a.due_date);
+                const bDate = new Date(b.due_date);
+                return direction === 'asc' ? aDate - bDate : bDate - aDate;
+                
+            case 'priority':
+                // Define priority order: High -> Medium -> Low
+                const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+                aValue = priorityOrder[a.priority] || 0;
+                bValue = priorityOrder[b.priority] || 0;
+                return direction === 'asc' ? aValue - bValue : bValue - aValue;
+                
+            case 'progress':
+                // Use progress property or calculate from subtasks if available
+                aValue = a.progress !== undefined ? a.progress : 0;
+                bValue = b.progress !== undefined ? b.progress : 0;
+                return direction === 'asc' ? aValue - bValue : bValue - aValue;
+                
+            case 'created_at':
+            default:
+                // Default sorting by creation date (newest first)
+                if (!a.created_at && !b.created_at) return 0;
+                if (!a.created_at) return direction === 'asc' ? 1 : -1;
+                if (!b.created_at) return direction === 'asc' ? -1 : 1;
+                
+                const aCreated = new Date(a.created_at);
+                const bCreated = new Date(b.created_at);
+                return direction === 'asc' ? aCreated - bCreated : bCreated - aCreated;
+        }
+    });
+};
+
+/**
  * Applies all filters to tasks
  * @param {Array} tasks - Array of task objects
  * @param {Object} filters - Object containing all filter states
@@ -116,18 +167,34 @@ export const applySearch = (tasks, query) => {
 };
 
 /**
- * Applies both filters and search to tasks
+ * Applies sorting to tasks
+ * @param {Array} tasks - Array of task objects
+ * @param {String} sortBy - Field to sort by
+ * @param {String} sortDirection - Sort direction
+ * @returns {Array} - Sorted tasks
+ */
+export const applySorting = (tasks, sortBy, sortDirection) => {
+    return sortTasks(tasks, sortBy, sortDirection);
+};
+
+/**
+ * Applies filters, search, and sorting to tasks
  * @param {Array} tasks - Array of task objects
  * @param {Object} filters - Object containing all filter states
  * @param {String} query - Search query
- * @returns {Array} - Filtered and searched tasks
+ * @param {String} sortBy - Field to sort by
+ * @param {String} sortDirection - Sort direction
+ * @returns {Array} - Filtered, searched, and sorted tasks
  */
-export const applyFiltersAndSearch = (tasks, filters, query) => {
+export const applyFiltersSearchAndSort = (tasks, filters, query, sortBy, sortDirection) => {
     // First apply filters
     const filteredTasks = applyFilters(tasks, filters);
     
     // Then apply search to filtered tasks
-    return applySearch(filteredTasks, query);
+    const searchedTasks = applySearch(filteredTasks, query);
+    
+    // Finally apply sorting
+    return applySorting(searchedTasks, sortBy, sortDirection);
 };
 
 /**

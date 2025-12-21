@@ -11,9 +11,10 @@ import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/toast/ToastContext';
-import { PlusCircleIcon, PlusIcon, FunnelIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { applyFilters, hasActiveFilters, clearFilters, applyFiltersAndSearch } from '../utils/filterUtils';
+import { PlusCircleIcon, PlusIcon, FunnelIcon, MagnifyingGlassIcon, ArrowsUpDownIcon } from '@heroicons/react/24/solid';
+import { applyFilters, hasActiveFilters, clearFilters, applyFiltersSearchAndSort } from '../utils/filterUtils';
 import FilterPanel from '../components/tasks/FilterPanel';
+import SortPanel from '../components/tasks/SortPanel';
 
 export default function Dashboard() {
     const { user } = useAuth();
@@ -34,6 +35,11 @@ export default function Dashboard() {
     
     // Search state
     const [searchQuery, setSearchQuery] = useState(''); // Search input value
+    
+    // Sorting state
+    const [sortBy, setSortBy] = useState('created_at'); // Default sort by creation date
+    const [sortDirection, setSortDirection] = useState('desc'); // Default descending (newest first)
+    const [isSortPanelOpen, setIsSortPanelOpen] = useState(false); // State for sort panel
     
     const toast = useToast();
 
@@ -233,17 +239,41 @@ export default function Dashboard() {
     const completedTasks = tasks.filter(task => task.status === 'completed');
     
     // Apply filters and search to tasks
-    const filteredOngoingTasks = applyFiltersAndSearch(ongoingTasks, {
+    const filteredOngoingTasks = applyFiltersSearchAndSort(ongoingTasks, {
         priorityFilters,
         dueDateFilter,
         statusFilters
-    }, searchQuery);
+    }, searchQuery, sortBy, sortDirection);
     
-    const filteredCompletedTasks = applyFiltersAndSearch(completedTasks, {
+    const filteredCompletedTasks = applyFiltersSearchAndSort(completedTasks, {
         priorityFilters,
         dueDateFilter,
         statusFilters
-    }, searchQuery);
+    }, searchQuery, sortBy, sortDirection);
+
+    // Close panels when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Close filter panel if click is outside
+            if (isFilterPanelOpen && 
+                !event.target.closest('.filter-panel') && 
+                !event.target.closest('[aria-label="Filter tasks"]')) {
+                setIsFilterPanelOpen(false);
+            }
+            
+            // Close sort panel if click is outside
+            if (isSortPanelOpen && 
+                !event.target.closest('.sort-panel') && 
+                !event.target.closest('[aria-label="Sort tasks"]')) {
+                setIsSortPanelOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isFilterPanelOpen, isSortPanelOpen]);
 
     return (
         <Layout>
@@ -263,6 +293,12 @@ export default function Dashboard() {
                     {hasActiveFilters({ priorityFilters, dueDateFilter, statusFilters }) && (
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
                             Filtered
+                        </span>
+                    )}
+                    {/* Active sort indicator */}
+                    {sortBy !== 'created_at' && (
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            Sorted
                         </span>
                     )}
                 </div>
@@ -293,6 +329,32 @@ export default function Dashboard() {
                             />
                         )}
                     </div>
+                    
+                    {/* Sort Button */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsSortPanelOpen(!isSortPanelOpen)}
+                            className={`p-2 rounded-lg ${
+                                sortBy !== 'created_at'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                            }`}
+                            aria-label="Sort tasks"
+                            title="Sort tasks"
+                        >
+                            <ArrowsUpDownIcon className="h-5 w-5" />
+                        </button>
+                        {isSortPanelOpen && (
+                            <SortPanel
+                                sortBy={sortBy}
+                                setSortBy={setSortBy}
+                                sortDirection={sortDirection}
+                                setSortDirection={setSortDirection}
+                                onClose={() => setIsSortPanelOpen(false)}
+                            />
+                        )}
+                    </div>
+                    
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-emerald-500/25"
