@@ -445,6 +445,7 @@ export default function Dashboard() {
                                 tasks={filteredOngoingTasks} 
                                 onUpdateStatus={handleUpdateTaskStatus} 
                                 onDelete={handleDeleteTask}
+                                onTaskStatusUpdate={handleUpdateTaskStatus}
                                 updatingTaskIds={updatingTaskIds}
                                 deletingTaskIds={deletingTaskIds}
                             />
@@ -476,6 +477,7 @@ export default function Dashboard() {
                                 tasks={filteredCompletedTasks} 
                                 onUpdateStatus={handleUpdateTaskStatus} 
                                 onDelete={handleDeleteTask}
+                                onTaskStatusUpdate={handleUpdateTaskStatus}
                                 updatingTaskIds={updatingTaskIds}
                                 deletingTaskIds={deletingTaskIds}
                             />

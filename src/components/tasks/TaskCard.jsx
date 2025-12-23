@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import SubTaskList from './SubTaskList';
 import Spinner from '../ui/Spinner';
 import Modal from '../ui/Modal';
+import TaskModal from './TaskModal';
 import { ChevronDownIcon, TrashIcon, ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
 import { isTaskOverdue, formatDate } from '../../utils/taskUtils';
@@ -19,8 +19,8 @@ const priorityStyles = {
     High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
 };
 
-export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, isDeleting }) {
-    const [isExpanded, setIsExpanded] = useState(false);
+export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, isDeleting, onTaskStatusUpdate }) {
+    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [progress, setProgress] = useState(0);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     
@@ -46,16 +46,16 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
             <div className={cardClass} role="article" aria-labelledby={`task-title-${task.id}`}>
                 <div 
                     className="p-4 cursor-pointer" 
-                    onClick={() => setIsExpanded(!isExpanded)}
+                    onClick={() => setIsTaskModalOpen(true)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            setIsExpanded(!isExpanded);
+                            setIsTaskModalOpen(true);
                         }
                     }}
                     role="button"
                     tabIndex={0}
-                    aria-expanded={isExpanded}
+                    aria-expanded={isTaskModalOpen}
                     aria-controls={`task-details-${task.id}`}
                 >
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
@@ -144,10 +144,10 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
                         <span className="break-words min-w-0 truncate">Due: {formatDate(task.dueDate || task.due_date)}</span>
                         <button 
                             className="-m-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 transform hover:scale-110 active:scale-90"
-                            aria-label={isExpanded ? 'Collapse task details' : 'Expand task details'}
-                            aria-expanded={isExpanded}
+                            aria-label="View task details"
+                            aria-expanded={isTaskModalOpen}
                         >
-                            <ChevronDownIcon className={`h-5 w-5 text-gray-400 transition-transform duration-300 ease-in-out ${isExpanded ? 'transform rotate-180' : ''}`} />
+                            <ChevronDownIcon className="h-5 w-5 text-gray-400 transition-transform duration-300 ease-in-out" />
                         </button>
                     </div>
                     <div className="mt-4" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" aria-label={`Task progress: ${Math.round(progress)}%`}>
@@ -160,23 +160,17 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
                         </div>
                     </div>
                 </div>
-                <div 
-                    id={`task-details-${task.id}`}
-                    className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
-                    aria-hidden={!isExpanded}
-                >
-                    {isExpanded && (
-                        <div className="px-4 pb-4 overflow-y-auto custom-scrollbar max-h-60">
-                            <SubTaskList 
-                                taskId={task.id} 
-                                taskStatus={task.status}
-                                onProgressUpdate={handleProgressUpdate}
-                                onTaskStatusUpdate={onUpdateStatus}
-                            />
-                        </div>
-                    )}
-                </div>
             </div>
+            
+            {/* Task Details Modal */}
+            <TaskModal
+                isOpen={isTaskModalOpen}
+                onClose={() => setIsTaskModalOpen(false)}
+                task={task}
+                onUpdateStatus={onUpdateStatus}
+                onDelete={onDelete}
+                onTaskStatusUpdate={onTaskStatusUpdate}
+            />
             
             {/* Delete Confirmation Modal */}
             <Modal

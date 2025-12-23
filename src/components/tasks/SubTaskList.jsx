@@ -69,8 +69,7 @@ export default function SubTaskList({ taskId, taskStatus, onProgressUpdate, onTa
     };
 
     return (
-        <div className="mt-4 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
-            <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Sub-tasks</h4>
+        <>
             <form onSubmit={handleAddSubTask} className="mb-3 flex flex-col sm:flex-row gap-2">
                 <input
                     type="text"
@@ -109,6 +108,6 @@ export default function SubTaskList({ taskId, taskStatus, onProgressUpdate, onTa
                     </li>
                 ))}
             </ul>
-        </div>
+        </>
     );
 }
