@@ -1,13 +1,27 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
 import { useSharedTheme } from '../contexts/SharedThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import logo from '../../public/logo.png';
 
 export default function LandingPage() {
     const { isDarkMode, toggleTheme } = useSharedTheme();
+    const { user, signOut } = useAuth();
+    const navigate = useNavigate();
+    
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/');
+    };
+    
+    const getDisplayName = () => {
+        if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
+        if (user?.user_metadata?.name) return user.user_metadata.name;
+        return user?.email || 'User';
+    };
 
     return (
         <div className={`min-h-screen ${isDarkMode ? 'bg-black' : 'bg-white'} transition-colors duration-300`}>
@@ -33,18 +47,34 @@ export default function LandingPage() {
 
                         {/* Right Side Actions */}
                         <div className="flex items-center space-x-4">
-                            <Link 
-                                to="/login" 
-                                className={`text-sm font-medium ${isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
-                            >
-                                Sign In
-                            </Link>
-                            <Link 
-                                to="/signup" 
-                                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors"
-                            >
-                                Sign Up
-                            </Link>
+                            {user ? (
+                                <>
+                                    <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                                        {getDisplayName()}
+                                    </span>
+                                    <button
+                                        onClick={handleLogout}
+                                        className={`px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors`}
+                                    >
+                                        Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link 
+                                        to="/login" 
+                                        className={`text-sm font-medium ${isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
+                                    >
+                                        Sign In
+                                    </Link>
+                                    <Link 
+                                        to="/signup" 
+                                        className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </>
+                            )}
                             <button
                                 onClick={toggleTheme}
                                 className={`p-2 rounded-lg ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}

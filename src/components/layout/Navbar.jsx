@@ -8,13 +8,20 @@ import { useSharedTheme } from '../../contexts/SharedThemeContext';
 
 export default function Navbar() {
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-    const { signOut } = useAuth();
+    const { user, signOut } = useAuth();
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useSharedTheme();
+    
     const handleLogout = () => {
         signOut();
         setIsLogoutModalOpen(false);
         navigate('/');
+    };
+    
+    const getDisplayName = () => {
+        if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
+        if (user?.user_metadata?.name) return user.user_metadata.name;
+        return user?.email || 'User';
     };
 
     return (
@@ -37,14 +44,36 @@ export default function Navbar() {
                     >
                         {isDarkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
                     </button>
-                    <button
-                        type="button"
-                        onClick={() => setIsLogoutModalOpen(true)}
-                        className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200 transition-all duration-200 transform hover:scale-105 active:scale-95"
-                    >
-                        <span className="sr-only">Logout</span>
-                        <ArrowRightOnRectangleIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
+                    {user ? (
+                        <>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {getDisplayName()}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setIsLogoutModalOpen(true)}
+                                className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200 transition-all duration-200 transform hover:scale-105 active:scale-95"
+                            >
+                                <span className="sr-only">Logout</span>
+                                <ArrowRightOnRectangleIcon className="h-6 w-6" aria-hidden="true" />
+                            </button>
+                        </>
+                    ) : (
+                        <div className="flex items-center space-x-2">
+                            <Link 
+                                to="/login"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-all duration-200"
+                            >
+                                Login
+                            </Link>
+                            <Link 
+                                to="/signup"
+                                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-all duration-200 transform hover:scale-105 active:scale-95"
+                            >
+                                Sign Up
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </header>
 
