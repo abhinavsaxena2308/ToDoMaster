@@ -9,6 +9,7 @@ import TermsOfService from '../components/legal/TermsOfService';
 import PrivacyPolicy from '../components/legal/PrivacyPolicy';
 
 export default function Signup() {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -27,10 +28,22 @@ export default function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!name.trim()) {
+            setError('Name is required');
+            return;
+        }
         try {
             setError('');
             setLoading(true);
-            const { error } = await signUp({ email, password });
+            const { error } = await signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: name.trim()
+                    }
+                }
+            });
             if (error) throw error;
             alert('Check your email for the confirmation link!');
             navigate('/login');
@@ -100,6 +113,19 @@ export default function Signup() {
 
                         {/* Form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            <div>
+                                <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    className={`w-full px-4 py-3 rounded-lg border ${isDarkMode ? 'bg-white/10 border-white/20 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200`}
+                                    placeholder="Enter your full name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+                            </div>
                             <div>
                                 <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>
                                     Email Address
