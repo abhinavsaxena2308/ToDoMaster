@@ -11,6 +11,7 @@ const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Documentation = lazy(() => import('./pages/Documentation'));
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'));
 
 function App() {
@@ -50,6 +51,14 @@ function App() {
                             <ProtectedRoute>
                                 <Dashboard />
                             </ProtectedRoute>
+                        </Suspense>
+                    }
+                />
+                <Route 
+                    path="/docs" 
+                    element={
+                        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+                            <Documentation />
                         </Suspense>
                     }
                 />
