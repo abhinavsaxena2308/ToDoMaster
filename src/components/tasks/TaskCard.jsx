@@ -170,6 +170,7 @@ export default function TaskCard({ task, onUpdateStatus, onDelete, isUpdating, i
                 onUpdateStatus={onUpdateStatus}
                 onDelete={onDelete}
                 onTaskStatusUpdate={onTaskStatusUpdate}
+                onProgressUpdate={handleProgressUpdate}
             />
             
             {/* Delete Confirmation Modal */}

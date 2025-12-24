@@ -1,6 +1,7 @@
 import Modal from '../ui/Modal';
 import SubTaskList from './SubTaskList';
 import { formatDate } from '../../utils/taskUtils';
+import { supabase } from '../../lib/supabaseClient';
 
 const statusStyles = {
     upcoming: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
@@ -15,7 +16,7 @@ const priorityStyles = {
     High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
 };
 
-export default function TaskModal({ isOpen, onClose, task, onUpdateStatus, onDelete, onTaskStatusUpdate }) {
+export default function TaskModal({ isOpen, onClose, task, onUpdateStatus, onDelete, onTaskStatusUpdate, onProgressUpdate }) {
     if (!task) return null;
 
     return (
@@ -53,7 +54,25 @@ export default function TaskModal({ isOpen, onClose, task, onUpdateStatus, onDel
                         <SubTaskList 
                             taskId={task.id} 
                             taskStatus={task.status}
-                            onProgressUpdate={() => {}} // Progress is handled by parent
+                            onProgressUpdate={async (completed, total) => {
+                                // Calculate the progress percentage
+                                const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+                                
+                                // Update the progress in the database
+                                const { data, error } = await supabase
+                                    .from('tasks')
+                                    .update({ progress })
+                                    .eq('id', task.id);
+
+                                if (error) {
+                                    console.error('Error updating task progress:', error);
+                                } else {
+                                    // If all subtasks are completed and task is not already completed, update status
+                                    if (progress === 100 && task.status !== 'completed') {
+                                        onTaskStatusUpdate(task.id, 'completed');
+                                    }
+                                }
+                            }}
                             onTaskStatusUpdate={onTaskStatusUpdate}
                         />
                     </div>
