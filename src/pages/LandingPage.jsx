@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon, UserCircleIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
 import { useSharedTheme } from '../contexts/SharedThemeContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,11 +17,27 @@ export default function LandingPage() {
         navigate('/');
     };
     
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    
     const getDisplayName = () => {
         if (user?.user_metadata?.full_name) return user.user_metadata.full_name;
         if (user?.user_metadata?.name) return user.user_metadata.name;
         return user?.email || 'User';
     };
+    
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (isProfileDropdownOpen && !event.target.closest('.profile-dropdown')) {
+                setIsProfileDropdownOpen(false);
+            }
+        };
+        
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isProfileDropdownOpen]);
 
     return (
         <div className={`min-h-screen ${isDarkMode ? 'bg-black' : 'bg-white'} transition-colors duration-300`}>
@@ -48,17 +64,57 @@ export default function LandingPage() {
                         {/* Right Side Actions */}
                         <div className="flex items-center space-x-4">
                             {user ? (
-                                <>
-                                    <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                        {getDisplayName()}
-                                    </span>
-                                    <button
-                                        onClick={handleLogout}
-                                        className={`px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors`}
-                                    >
-                                        Logout
-                                    </button>
-                                </>
+                                <div className="flex items-center space-x-4">
+                                    {/* Profile dropdown */}
+                                    <div className="relative profile-dropdown">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                                            className="flex items-center space-x-2 px-2 py-1 rounded-lg hover:bg-black/10 transition-all duration-200 transform hover:scale-105 active:scale-95"
+                                            aria-expanded={isProfileDropdownOpen}
+                                            aria-haspopup="true"
+                                        >
+                                            <UserCircleIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden md:inline">
+                                                {getDisplayName()}
+                                            </span>
+                                            <ChevronDownIcon 
+                                                className={`h-4 w-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} 
+                                            />
+                                        </button>
+                                        
+                                        {isProfileDropdownOpen && (
+                                            <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-gray-200 dark:border-gray-700">
+                                                <div className="py-1" role="menu">
+                                                    <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                                                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                                            {getDisplayName()}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                                            {user.email}
+                                                        </p>
+                                                    </div>
+                                                    <div className="px-4 py-2">
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Account</p>
+                                                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                                                            {user.app_metadata?.provider ? `Signed in with ${user.app_metadata.provider}` : 'Email Password'}
+                                                        </p>
+                                                    </div>
+                                                    <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
+                                                        <button
+                                                            onClick={handleLogout}
+                                                            className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors duration-200 flex items-center"
+                                                            role="menuitem"
+                                                        >
+                                                            <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
+                                                            Sign out
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             ) : (
                                 <>
                                     <Link 
